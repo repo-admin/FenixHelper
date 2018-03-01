@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7685FA4C-D022-4CC0-B5F3-6D4354EF8C9C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FenixHelper</RootNamespace>
+    <AssemblyName>FenixHelper</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\FenixHelper.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppLog\AppLog.cs" />
+    <Compile Include="BC.cs" />
+    <Compile Include="Common\ResultAppService.cs" />
+    <Compile Include="CronNET\CronDaemon.cs" />
+    <Compile Include="CronNET\CronJob.cs" />
+    <Compile Include="CronNET\CronSchedule.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="MultimediaTimer\MultimediaTimer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\DoubleMinMaxAttribute.cs" />
+    <Compile Include="Validation\IntMinMaxAttribute.cs" />
+    <Compile Include="Validation\NotNullOrEmptyAttribute.cs" />
+    <Compile Include="Validation\Validation.cs" />
+    <Compile Include="XMLMessage\C0CrmOrder.cs" />
+    <Compile Include="XMLMessage\CDLItems.cs" />
+    <Compile Include="XMLMessage\CDLItemsForKit.cs" />
+    <Compile Include="XMLMessage\CDLItemTypes.cs" />
+    <Compile Include="XMLMessage\CDLMeasures.cs" />
+    <Compile Include="XMLMessage\CDLMessageTypes.cs" />
+    <Compile Include="XMLMessage\CDLQualities.cs" />
+    <Compile Include="XMLMessage\CDLReturnValues.cs" />
+    <Compile Include="XMLMessage\CDLSuppliers.cs" />
+    <Compile Include="XMLMessage\D0Delete.cs" />
+    <Compile Include="XMLMessage\D1Delete.cs" />
+    <Compile Include="XMLMessage\IXMLMessage.cs" />
+    <Compile Include="XMLMessage\K0Kit.cs" />
+    <Compile Include="XMLMessage\K1Kit.cs" />
+    <Compile Include="XMLMessage\K2Kit.cs" />
+    <Compile Include="XMLMessage\R0Reception.cs" />
+    <Compile Include="XMLMessage\R1Reception.cs" />
+    <Compile Include="XMLMessage\RF0Refurbished.cs" />
+    <Compile Include="XMLMessage\RF1Refurbished.cs" />
+    <Compile Include="XMLMessage\S0Shipment.cs" />
+    <Compile Include="XMLMessage\S1Shipment.cs" />
+    <Compile Include="XML\XmlCreator.cs" />
+    <Compile Include="XML\XmlDeserializator.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
