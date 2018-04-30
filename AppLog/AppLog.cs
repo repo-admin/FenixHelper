@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace FenixHelper
+namespace Fenix.AppLog
 {
 	/// <summary>
 	/// Pomocná třída pro logování
@@ -12,22 +12,22 @@ namespace FenixHelper
 		/// <summary>
 		/// Kategorie logu do databáze - informace
 		/// </summary>
-		public const string LOG_CATEGORY_INFO = "INFO";
+		public const string LogCategoryInfo = "INFO";
 
 		/// <summary>
 		/// Kategorie logu do databáze - varování
 		/// </summary>
-		public const string LOG_CATEGORY_WARNING = "WARNING";
+		public const string LogCategoryWarning = "WARNING";
 
 		/// <summary>
 		/// Kategorie logu do databáze - chyba
 		/// </summary>
-		public const string LOG_CATEGORY_ERROR = "ERROR";
+		public const string LogCategoryError = "ERROR";
 
 		/// <summary>
 		/// Kategorie logu do databáze - XML
 		/// </summary>
-		public const string LOG_CATEGORY_XML = "XML";
+		public const string LogCategoryXml = "XML";
 
 		/// <summary>
 		/// Vrací jméno metody

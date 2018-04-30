@@ -1,31 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FenixHelper.Validation
+namespace Fenix.Validation
 {
-	/// <summary>
-	/// 
+    /// <summary>
+    /// Atribut, který specifikuje minimální a maximální hodnotu typu <see cref="Int32"/>
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class IntMinMaxAttribute : Attribute
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public int Min { get; set; }
+        /// <summary>
+        /// Minimální hodnota
+        /// </summary>
+        public int Min { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public int Max { get; set; }
+        /// <summary>
+        /// Maximální hodnota
+        /// </summary>
+        public int Max { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public IntMinMaxAttribute()
+        /// <summary>
+        /// Inicializuje novou instanci třídy IntMinMaxAttribute
+        /// </summary>
+        public IntMinMaxAttribute()
 		{
 			Min = int.MinValue;
 			Max = int.MaxValue;

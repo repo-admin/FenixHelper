@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using FenixHelper;
-using FenixHelper.Validation;
+using Fenix.Validation;
+using Fenix.Xml;
 
 #region XML
 /*
@@ -43,12 +40,46 @@ using FenixHelper.Validation;
 */
 #endregion
 
-namespace FenixHelper.XMLMessage
+namespace Fenix.XmlMessages
 {
 	/// <summary>
 	/// Třída pro vytvoření XML message pro Reception R1	
 	/// (potvrzení recepce ze strany ND)
 	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    /// &lt;NewDataSet xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+    ///  &lt;CommunicationMessagesReceptionConfirmation&gt;
+    ///    &lt;ID&gt;4956&lt;/ID&gt;
+    ///    &lt;MessageID&gt;01000000032&lt;/MessageID&gt;
+    ///    &lt;MessageTypeID&gt;2&lt;/MessageTypeID&gt;
+    ///    &lt;MessageTypeDescription&gt;ReceptionConfirmation&lt;/MessageTypeDescription&gt;
+    ///    &lt;MessageDateOfReceipt&gt;2014-08-08&lt;/MessageDateOfReceipt&gt;
+    ///    &lt;ReceptionOrderID&gt;1&lt;/ReceptionOrderID&gt;
+    ///    &lt;HeliosOrderID&gt;135201&lt;/HeliosOrderID&gt;
+    ///    &lt;ItemSupplierID&gt;10&lt;/ItemSupplierID&gt;
+    ///    &lt;ItemSupplierDescription&gt;LICA servis s.r.o.&lt;/ItemSupplierDescription&gt;
+    ///    &lt;items&gt;
+    ///      &lt;item&gt;
+    ///        &lt;HeliosOrderRecordID&gt;555422&lt;/HeliosOrderRecordID&gt;
+    ///        &lt;ItemID&gt;3240&lt;/ItemID&gt;
+    ///        &lt;ItemDescription&gt;kompletace  Kaon KCF-SA700PCO HD-HDD USB READY&lt;/ItemDescription&gt;
+    ///        &lt;ItemQuantity&gt;5454&lt;/ItemQuantity&gt;
+    ///        &lt;ItemUnitOfMeasureID&gt;1&lt;/ItemUnitOfMeasureID&gt;
+    ///        &lt;ItemUnitOfMeasure&gt;KS&lt;/ItemUnitOfMeasure&gt;
+    ///        &lt;ItemQualityID&gt;1&lt;/ItemQualityID&gt;
+    ///        &lt;ItemQuality&gt;New&lt;/ItemQuality&gt;
+    ///        &lt;ItemSNs&gt;
+    ///          &lt;ItemSN SN=&quot;A71865865&quot;&gt; &lt;/ItemSN&gt;
+    ///          &lt;ItemSN SN=&quot;A71865966&quot;&gt; &lt;/ItemSN&gt;
+    ///        &lt;/ItemSNs&gt;
+    ///      &lt;/item&gt;
+    ///    &lt;/items&gt;
+    ///  &lt;/CommunicationMessagesReceptionConfirmation&gt;
+    /// &lt;/NewDataSet&gt;
+	/// </code>
+	/// </remarks>
 	[XmlRoot("NewDataSet")]
 	public class R1Reception : IXMLMessage
 	{
@@ -82,7 +113,7 @@ namespace FenixHelper.XMLMessage
 		/// <returns></returns>
 		public string ToXMLString()
 		{
-			return XmlCreator.CreateXmlString(this, BC.URL_W3_ORG_SCHEMA, Encoding.UTF8);
+			return XmlCreator.CreateXmlString(this, BC.UrlW3OrgSchema, Encoding.UTF8);
 		}
 
 		/// <summary>
@@ -112,25 +143,25 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// ID (čeho?????????)
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int ID { get; set; }
 
 		/// <summary>
 		/// ID zprávy (ze strany ND)
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int MessageID { get; set; }
 
 		/// <summary>
 		/// ID typu zprávy
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int MessageType { get; set; }
 
 		/// <summary>
 		/// popis typu zprávy
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string MessageDescription { get; set; }
 
 		/// <summary>		
@@ -211,7 +242,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis/název položky
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemDescription { get; set; }
 
 		/// <summary>
@@ -228,7 +259,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// měrná jednotka
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemUnitOfMeasure { get; set; }
 
 		/// <summary>
@@ -240,7 +271,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis kvality položky
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemQuality { get; set; }
 
 		/// <summary>

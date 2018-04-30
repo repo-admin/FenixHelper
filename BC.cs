@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FenixHelper
+﻿namespace Fenix
 {
 	internal class BC
 	{
@@ -10,7 +8,7 @@ namespace FenixHelper
 		/// URL na w3.org XML Schema
 		/// <value>http://www.w3.org/2001/XMLSchema</value>
 		/// </summary>
-		internal const string URL_W3_ORG_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+		internal const string UrlW3OrgSchema = "http://www.w3.org/2001/XMLSchema";
 
 		#endregion
 	}

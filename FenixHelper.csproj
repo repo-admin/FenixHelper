@@ -7,7 +7,7 @@
     <ProjectGuid>{7685FA4C-D022-4CC0-B5F3-6D4354EF8C9C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FenixHelper</RootNamespace>
+    <RootNamespace>Fenix</RootNamespace>
     <AssemblyName>FenixHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,36 +50,51 @@
     <Compile Include="CronNET\CronDaemon.cs" />
     <Compile Include="CronNET\CronJob.cs" />
     <Compile Include="CronNET\CronSchedule.cs" />
+    <Compile Include="CronNET\ICronDaemon.cs" />
+    <Compile Include="CronNET\ICronJob.cs" />
+    <Compile Include="CronNET\ICronSchedule.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="MultimediaTimer\MultimediaTimer.cs" />
+    <Compile Include="MultimediaTimer\TimerCaps.cs" />
+    <Compile Include="MultimediaTimer\TimerMode.cs" />
+    <Compile Include="MultimediaTimer\TimerStartException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\DoubleMinMaxAttribute.cs" />
     <Compile Include="Validation\IntMinMaxAttribute.cs" />
     <Compile Include="Validation\NotNullOrEmptyAttribute.cs" />
     <Compile Include="Validation\Validation.cs" />
-    <Compile Include="XMLMessage\C0CrmOrder.cs" />
-    <Compile Include="XMLMessage\CDLItems.cs" />
-    <Compile Include="XMLMessage\CDLItemsForKit.cs" />
-    <Compile Include="XMLMessage\CDLItemTypes.cs" />
-    <Compile Include="XMLMessage\CDLMeasures.cs" />
-    <Compile Include="XMLMessage\CDLMessageTypes.cs" />
-    <Compile Include="XMLMessage\CDLQualities.cs" />
-    <Compile Include="XMLMessage\CDLReturnValues.cs" />
-    <Compile Include="XMLMessage\CDLSuppliers.cs" />
-    <Compile Include="XMLMessage\D0Delete.cs" />
-    <Compile Include="XMLMessage\D1Delete.cs" />
-    <Compile Include="XMLMessage\IXMLMessage.cs" />
-    <Compile Include="XMLMessage\K0Kit.cs" />
-    <Compile Include="XMLMessage\K1Kit.cs" />
-    <Compile Include="XMLMessage\K2Kit.cs" />
-    <Compile Include="XMLMessage\R0Reception.cs" />
-    <Compile Include="XMLMessage\R1Reception.cs" />
-    <Compile Include="XMLMessage\RF0Refurbished.cs" />
-    <Compile Include="XMLMessage\RF1Refurbished.cs" />
-    <Compile Include="XMLMessage\S0Shipment.cs" />
-    <Compile Include="XMLMessage\S1Shipment.cs" />
-    <Compile Include="XML\XmlCreator.cs" />
-    <Compile Include="XML\XmlDeserializator.cs" />
+    <Compile Include="XmlMessages\C0CrmOrder.cs" />
+    <Compile Include="XmlMessages\C0Header.cs" />
+    <Compile Include="XmlMessages\C0Items.cs" />
+    <Compile Include="XmlMessages\CDLItems.cs" />
+    <Compile Include="XmlMessages\CDLItemsForKit.cs" />
+    <Compile Include="XmlMessages\CdlItemsForKitItem.cs" />
+    <Compile Include="XmlMessages\CdlItemsForKitItemIntegration.cs" />
+    <Compile Include="XmlMessages\CdlItemsItem.cs" />
+    <Compile Include="XmlMessages\CdlItemsItemIntegration.cs" />
+    <Compile Include="XmlMessages\CDLItemTypes.cs" />
+    <Compile Include="XmlMessages\CDLItemTypesItemIntegration.cs" />
+    <Compile Include="XmlMessages\CDLMeasures.cs" />
+    <Compile Include="XmlMessages\CDLMeasuresMeasureIntegration.cs" />
+    <Compile Include="XmlMessages\CDLMessageTypes.cs" />
+    <Compile Include="XmlMessages\CDLQualities.cs" />
+    <Compile Include="XmlMessages\CDLReturnValues.cs" />
+    <Compile Include="XmlMessages\CDLSuppliers.cs" />
+    <Compile Include="XmlMessages\D0Delete.cs" />
+    <Compile Include="XmlMessages\D1Delete.cs" />
+    <Compile Include="XmlMessages\IXMLMessage.cs" />
+    <Compile Include="XmlMessages\K0Kit.cs" />
+    <Compile Include="XmlMessages\K1Kit.cs" />
+    <Compile Include="XmlMessages\K2Kit.cs" />
+    <Compile Include="XmlMessages\R0Reception.cs" />
+    <Compile Include="XmlMessages\R1ComponentItem.cs" />
+    <Compile Include="XmlMessages\R1Reception.cs" />
+    <Compile Include="XmlMessages\RF0Refurbished.cs" />
+    <Compile Include="XmlMessages\RF1Refurbished.cs" />
+    <Compile Include="XmlMessages\S0Shipment.cs" />
+    <Compile Include="XmlMessages\S1Shipment.cs" />
+    <Compile Include="Xml\XmlCreator.cs" />
+    <Compile Include="Xml\XmlDeserializator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

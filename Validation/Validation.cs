@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Xml.Serialization;
-using System.ComponentModel;
 
-namespace FenixHelper.Validation
+namespace Fenix.Validation
 {
 	/// <summary>
-	/// 
+	/// Statická třída se sadou validačních generických metod
 	/// </summary>
 	public static class Validation
 	{
 		/// <summary>
+		/// Metoda, která validuje vlastnost třídy
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="classToValidate">trida obsahujici kontrolovanou property</param>
@@ -69,6 +66,13 @@ namespace FenixHelper.Validation
 			return (error.Count == 0);
 		}
 
+        /// <summary>
+        /// Validace vlastnosti s návratovou hodnotou typu <see cref="Int32"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="classToValidate">trida obsahujici kontrolovanou property</param>
+        /// <param name="pi">property info kontrolovane property</param>
+        /// <param name="error">null/popis chyby validace</param>
 		private static void CheckIntMinMaxAttribute<T>(T classToValidate, PropertyInfo pi, List<string> error)
 		{
 			IntMinMaxAttribute intMinMaxAttribute = (IntMinMaxAttribute)Attribute.GetCustomAttribute(pi, typeof(IntMinMaxAttribute));
@@ -90,7 +94,14 @@ namespace FenixHelper.Validation
 			}
 		}
 
-		private static void CheckDoubleMinMaxAttribute<T>(T classToValidate, PropertyInfo pi, List<string> error)
+	    /// <summary>
+	    /// Validace vlastnosti s návratovou hodnotou typu <see cref="Double"/>
+	    /// </summary>
+	    /// <typeparam name="T"></typeparam>
+	    /// <param name="classToValidate">trida obsahujici kontrolovanou property</param>
+	    /// <param name="pi">property info kontrolovane property</param>
+	    /// <param name="error">null/popis chyby validace</param>
+        private static void CheckDoubleMinMaxAttribute<T>(T classToValidate, PropertyInfo pi, List<string> error)
 		{
 			DoubleMinMaxAttribute doubleMinMaxAttribute = (DoubleMinMaxAttribute)Attribute.GetCustomAttribute(pi, typeof(DoubleMinMaxAttribute));
 
@@ -125,8 +136,15 @@ namespace FenixHelper.Validation
 				}
 			}
 		}
-		
-		private static void CheckNotNullOrEmptyAttribute<T>(T classToValidate, PropertyInfo pi, List<string> error)
+
+	    /// <summary>
+	    /// Validace vlastnosti s návratovou hodnotou typu <see cref="String"/>, která nesmí být null ani prázdný řetězec
+	    /// </summary>
+	    /// <typeparam name="T"></typeparam>
+	    /// <param name="classToValidate">trida obsahujici kontrolovanou property</param>
+	    /// <param name="pi">property info kontrolovane property</param>
+	    /// <param name="error">null/popis chyby validace</param>
+        private static void CheckNotNullOrEmptyAttribute<T>(T classToValidate, PropertyInfo pi, List<string> error)
 		{
 			NotNullOrEmptyAttribute notNullAttribute = (NotNullOrEmptyAttribute)Attribute.GetCustomAttribute(pi, typeof(NotNullOrEmptyAttribute));
 

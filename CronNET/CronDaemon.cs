@@ -3,34 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
-using UPC.MultimediaTimer;
+using Fenix.MultimediaTimer;
 
-namespace UPC.CronNET
+namespace Fenix.CronNET
 {
-	/// <summary>
-	/// Rozhraní pro CronDaemon
-	/// </summary>
-    public interface ICronDaemon
-    {
-		/// <summary>
-		/// Pøidání jobu
-		/// </summary>
-		/// <param name="schedule"></param>
-		/// <param name="action"></param>
-        void AddJob(string schedule, ThreadStart action);
-
-		/// <summary>
-		/// Spuštìní
-		/// </summary>
-        void Start();
-
-		/// <summary>
-		/// Zastavení
-		/// </summary>
-        void Stop();
-    }
-
-	/// <summary>
+    /// <summary>
 	/// 
 	/// </summary>
     public class CronDaemon : ICronDaemon
@@ -38,7 +15,7 @@ namespace UPC.CronNET
         [DllImport("winmm.dll", EntryPoint = "timeGetTime")]
         private static extern uint MM_GetTime();
 
-		private readonly UPC.MultimediaTimer.MultimediaTimer timer = new UPC.MultimediaTimer.MultimediaTimer();
+		private readonly MultimediaTimer.MultimediaTimer timer = new MultimediaTimer.MultimediaTimer();
 
         private readonly List<ICronJob> cron_jobs = new List<ICronJob>();
         private DateTime _last = DateTime.Now;

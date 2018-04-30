@@ -2,40 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace UPC.CronNET
+namespace Fenix.CronNET
 {
-	/// <summary>
-	/// Rozhraní pro CronSchedule
-	/// </summary>
-    public interface ICronSchedule
-    {
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-        bool IsValid(string expression);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="date_time"></param>
-		/// <returns></returns>
-        bool IsTime(DateTime date_time);
-    }
-
-	/// <summary>
-	/// 
+    /// <summary>
+	/// Plánovaè úloh
 	/// </summary>
     public class CronSchedule : ICronSchedule
     {
         #region Readonly Class Members
 
-        readonly static Regex divided_regex = new Regex(@"(\*/\d+)");
-        readonly static Regex range_regex = new Regex(@"(\d+\-\d+)\/?(\d+)?");
-        readonly static Regex wild_regex = new Regex(@"(\*)");
-        readonly static Regex list_regex = new Regex(@"(((\d+,)*\d+)+)");
-        readonly static Regex validation_regex = new Regex(divided_regex + "|" + range_regex + "|" + wild_regex + "|" + list_regex);
+        static readonly Regex _dividedRegex = new Regex(@"(\*/\d+)");
+        static readonly Regex _rangeRegex = new Regex(@"(\d+\-\d+)\/?(\d+)?");
+        static readonly Regex _wildRegex = new Regex(@"(\*)");
+        static readonly Regex _listRegex = new Regex(@"(((\d+,)*\d+)+)");
+        static readonly Regex _validationRegex = new Regex(_dividedRegex + "|" + _rangeRegex + "|" + _wildRegex + "|" + _listRegex);
 
         #endregion
 
@@ -46,27 +26,27 @@ namespace UPC.CronNET
 		/// <summary>
 		/// 
 		/// </summary>
-        public List<int> minutes;
+        public List<int> Minutes;
 
 		/// <summary>
 		/// 
 		/// </summary>
-        public List<int> hours;
+        public List<int> Hours;
 
 		/// <summary>
 		/// 
 		/// </summary>
-        public List<int> days_of_month;
+        public List<int> DaysOfMonth;
 
 		/// <summary>
 		/// 
 		/// </summary>
-        public List<int> months;
+        public List<int> Months;
 
 		/// <summary>
 		/// 
 		/// </summary>
-        public List<int> days_of_week;
+        public List<int> DaysOfWeek;
 
         #endregion
 
@@ -86,110 +66,151 @@ namespace UPC.CronNET
         public CronSchedule(string expressions)
         {
             this._expression = expressions;
-            generate();
+            Generate();
         }
 
         #endregion
 
         #region Public Methods
 
-        private bool isValid()
+        /// <summary>
+        /// Validuje výraz, pøedaný do instance tøídy v konstruktoru
+        /// </summary>
+        /// <returns></returns>
+        private bool IsValidInternal()
         {
             return IsValid(this._expression);
         }
 
 		/// <summary>
-		/// 
+		/// Vrácí stav validace pro specifikovaný výraz
 		/// </summary>
-		/// <param name="expression"></param>
+		/// <param name="expression">Výraz, který se bude validovat</param>
 		/// <returns></returns>
         public bool IsValid(string expression)
         {
-            MatchCollection matches = validation_regex.Matches(expression);
+            MatchCollection matches = _validationRegex.Matches(expression);
             return matches.Count > 0;//== 5;
         }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="date_time"></param>
+		/// <param name="dateTime"></param>
 		/// <returns></returns>
-        public bool IsTime(DateTime date_time)
+        public bool IsTime(DateTime dateTime)
         {
-            return minutes.Contains(date_time.Minute) &&
-                   hours.Contains(date_time.Hour) &&
-                   days_of_month.Contains(date_time.Day) &&
-                   months.Contains(date_time.Month) &&
-                   days_of_week.Contains((int)date_time.DayOfWeek);
+            return Minutes.Contains(dateTime.Minute) &&
+                   Hours.Contains(dateTime.Hour) &&
+                   DaysOfMonth.Contains(dateTime.Day) &&
+                   Months.Contains(dateTime.Month) &&
+                   DaysOfWeek.Contains((int)dateTime.DayOfWeek);
         }
 
-        private void generate()
+        /// <summary>
+        /// Generuje rozpad specifikovaného výrazu na jednotlivé èasové intervaly
+        /// </summary>
+        private void Generate()
         {
-            if (!isValid()) return;
+            if (!IsValidInternal()) return;
 
-            MatchCollection matches = validation_regex.Matches(this._expression);
+            MatchCollection matches = _validationRegex.Matches(this._expression);
 
-            generate_minutes(matches[0].ToString());
+            GenerateMinutes(matches[0].ToString());
 
             if (matches.Count > 1)
-                generate_hours(matches[1].ToString());
+                GenerateHours(matches[1].ToString());
             else
-                generate_hours("*");
+                GenerateHours("*");
             
             if (matches.Count > 2)
-                generate_days_of_month(matches[2].ToString());
+                GenerateDaysOfMonth(matches[2].ToString());
             else
-                generate_days_of_month("*");
+                GenerateDaysOfMonth("*");
             
             if (matches.Count > 3)
-                generate_months(matches[3].ToString());
+                GenerateMonths(matches[3].ToString());
             else
-                generate_months("*");
+                GenerateMonths("*");
             
             if (matches.Count > 4)
-                generate_days_of_weeks(matches[4].ToString());
+                GenerateDaysOfWeeks(matches[4].ToString());
             else
-                generate_days_of_weeks("*");
+                GenerateDaysOfWeeks("*");
         }
 
-        private void generate_minutes(string match)
+        /// <summary>
+        /// Generuje hodnotu <see cref="CronSchedule.Minutes"/>
+        /// </summary>
+        /// <param name="match">Výraz k parsování</param>
+        private void GenerateMinutes(string match)
         {
-            this.minutes = generate_values(match, 0, 60);
+            this.Minutes = GenerateValues(match, 0, 60);
         }
 
-        private void generate_hours(string match)
+        /// <summary>
+        /// Generuje hodnotu <see cref="CronSchedule.Hours"/>
+        /// </summary>
+        /// <param name="match"></param>
+        private void GenerateHours(string match)
         {
-            this.hours = generate_values(match, 0, 24);
+            this.Hours = GenerateValues(match, 0, 24);
         }
 
-        private void generate_days_of_month(string match)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        private void GenerateDaysOfMonth(string match)
         {
-            this.days_of_month = generate_values(match, 1, 32);
+            this.DaysOfMonth = GenerateValues(match, 1, 32);
         }
 
-        private void generate_months(string match)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        private void GenerateMonths(string match)
         {
-            this.months = generate_values(match, 1, 13);
+            this.Months = GenerateValues(match, 1, 13);
         }
 
-        private void generate_days_of_weeks(string match)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        private void GenerateDaysOfWeeks(string match)
         {
-            this.days_of_week = generate_values(match, 0, 7);
+            this.DaysOfWeek = GenerateValues(match, 0, 7);
         }
 
-        private List<int> generate_values(string configuration, int start, int max)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="start"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        private List<int> GenerateValues(string configuration, int start, int max)
         {
-            if (divided_regex.IsMatch(configuration)) return divided_array(configuration, start, max);
-            if (range_regex.IsMatch(configuration)) return range_array(configuration);
-            if (wild_regex.IsMatch(configuration)) return wild_array(configuration, start, max);
-            if (list_regex.IsMatch(configuration)) return list_array(configuration);
+            if (_dividedRegex.IsMatch(configuration)) return DividedArray(configuration, start, max);
+            if (_rangeRegex.IsMatch(configuration)) return RangeArray(configuration);
+            if (_wildRegex.IsMatch(configuration)) return WildArray(configuration, start, max);
+            if (_listRegex.IsMatch(configuration)) return ListArray(configuration);
 
             return new List<int>();
         }
 
-        private List<int> divided_array(string configuration, int start, int max)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="start"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        private List<int> DividedArray(string configuration, int start, int max)
         {
-            if (!divided_regex.IsMatch(configuration))
+            if (!_dividedRegex.IsMatch(configuration))
                 return new List<int>();
 
             List<int> ret = new List<int>();
@@ -203,9 +224,14 @@ namespace UPC.CronNET
             return ret;
         }
 
-        private List<int> range_array(string configuration)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private List<int> RangeArray(string configuration)
         {
-            if (!range_regex.IsMatch(configuration))
+            if (!_rangeRegex.IsMatch(configuration))
                 return new List<int>();
 
             List<int> ret = new List<int>();
@@ -232,9 +258,16 @@ namespace UPC.CronNET
             return ret;
         }
 
-        private List<int> wild_array(string configuration, int start, int max)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="start"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        private List<int> WildArray(string configuration, int start, int max)
         {
-            if (!wild_regex.IsMatch(configuration))
+            if (!_wildRegex.IsMatch(configuration))
                 return new List<int>();
 
             List<int> ret = new List<int>();
@@ -245,9 +278,14 @@ namespace UPC.CronNET
             return ret;
         }
 
-        private List<int> list_array(string configuration)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        private List<int> ListArray(string configuration)
         {
-            if (!list_regex.IsMatch(configuration))
+            if (!_listRegex.IsMatch(configuration))
                 return new List<int>();
 
             List<int> ret = new List<int>();

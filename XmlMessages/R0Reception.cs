@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using FenixHelper.Validation;
+using Fenix.Validation;
+using Fenix.Xml;
 
 #region XML
 
 /*
  
   <?xml version="1.0" encoding="utf-8" ?> 
-- <NewDataSet>
-- <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-- <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="CommunicationMessagesSentReception" msdata:UseCurrentLocale="true">
-- <xs:complexType>
-- <xs:choice minOccurs="1" maxOccurs="unbounded">
-- <xs:element name="CommunicationMessagesSentReception">
-- <xs:complexType name="Order">
-- <xs:sequence>
+<NewDataSet>
+<xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+<xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="CommunicationMessagesSentReception" msdata:UseCurrentLocale="true">
+<xs:complexType>
+<xs:choice minOccurs="1" maxOccurs="unbounded">
+<xs:element name="CommunicationMessagesSentReception">
+<xs:complexType name="Order">
+<xs:sequence>
   <xs:element name="ID" type="xs:int" use="required" /> 
   <xs:element name="MessageID" type="xs:int" use="required" /> 
   <xs:element name="MessageTypeID" type="xs:int" use="required" /> 
@@ -28,8 +27,8 @@ using FenixHelper.Validation;
   <xs:element name="ItemSupplierID" type="xs:int" use="required" /> 
   <xs:element name="ItemSupplierDescription" type="xs:string" use="required" /> 
   <xs:element name="ItemDateOfDelivery" type="xs:dateTime" use="required" /> 
-- <xs:complexType name="Items">
-- <xs:sequence>
+<xs:complexType name="Items">
+<xs:sequence>
   <xs:element name="HeliosOrderRecordID" type="xs:int" minOccurs="0" /> 
   <xs:element name="ItemID" type="xs:int" use="required" /> 
   <xs:element name="ItemDescription" type="xs:string" use="required" /> 
@@ -53,12 +52,54 @@ using FenixHelper.Validation;
 
 #endregion
 
-namespace FenixHelper.XMLMessage
+namespace Fenix.XmlMessages
 {
 	/// <summary>
 	/// Třída pro vytvoření XML message pro Reception R0	
 	/// (objednávka recepce ze strany UPC)
 	/// </summary>
+	/// <remarks>
+	/// <code>
+	/// &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    /// &lt;NewDataSet&gt;
+    ///   &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot; id=&quot;NewDataSet&quot;&gt;
+    ///      &lt;xs:element name = &quot; NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;CommunicationMessagesSentReception&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;
+    ///         &lt;xs:complexType&gt;
+    ///            &lt;xs:choice minOccurs = &quot;1&quot; maxOccurs=&quot;unbounded&quot;&gt;
+    ///               &lt;xs:element name = &quot; CommunicationMessagesSentReception&quot;&gt;
+    ///                  &lt;xs:complexType name = &quot; Order&quot;&gt;
+    ///                     &lt;xs:sequence&gt;
+    ///                        &lt;xs:element name = &quot; ID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; MessageID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; MessageTypeID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; MessageTypeDescription&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; MessageDateOfShipment&quot; type=&quot;xs:dateTime&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; HeliosOrderID&quot; type=&quot;xs:int&quot; minOccurs=&quot;0&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; ItemSupplierID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; ItemSupplierDescription&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:element name = &quot; ItemDateOfDelivery&quot; type=&quot;xs:dateTime&quot; use=&quot;required&quot; /&gt;
+    ///                        &lt;xs:complexType name = &quot; Items&quot;&gt;
+    ///                           &lt;xs:sequence&gt;
+    ///                              &lt;xs:element name = &quot; HeliosOrderRecordID&quot; type=&quot;xs:int&quot; minOccurs=&quot;0&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemDescription&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemQuantity&quot; type=&quot;xs:decimal&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemUnitOfMeasureID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemUnitOfMeasure&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemQualityID&quot; type=&quot;xs:int&quot; use=&quot;required&quot; /&gt;
+    ///                              &lt;xs:element name = &quot; ItemQuality&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
+    ///                           &lt;/xs:sequence&gt;
+    ///                        &lt;/xs:complexType&gt;
+    ///                     &lt;/xs:sequence&gt;
+    ///                  &lt;/xs:complexType&gt;
+    ///               &lt;/xs:element&gt;
+    ///            &lt;/xs:choice&gt;
+    ///         &lt;/xs:complexType&gt;
+    ///      &lt;/xs:element&gt;
+    ///   &lt;/xs:schema&gt;
+    /// &lt;/NewDataSet&gt;
+	/// </code>
+	/// </remarks>
 	[XmlRoot("NewDataSet")]
 	public class R0Reception : IXMLMessage
 	{
@@ -89,7 +130,7 @@ namespace FenixHelper.XMLMessage
 		/// <returns></returns>
 		public string ToXMLString()
 		{
-			return XmlCreator.CreateXmlString(this, BC.URL_W3_ORG_SCHEMA, Encoding.UTF8);
+			return XmlCreator.CreateXmlString(this, BC.UrlW3OrgSchema, Encoding.UTF8);
 		}
 
 		/// <summary>
@@ -128,7 +169,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis typu zprávy
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string MessageTypeDescription { get; set; }
 
 		/// <summary>
@@ -151,7 +192,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis/mázev dodavatele
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemSupplierDescription { get; set; }
 
 		/// <summary>
@@ -220,7 +261,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis/název položky
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemDescription { get; set; }
 
 		/// <summary>
@@ -237,7 +278,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// měrná jednotka
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemUnitOfMeasure { get; set; }
 		
 		/// <summary>
@@ -249,7 +290,7 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis kvality položky
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemQuality { get; set; }
 
 		/// <summary>

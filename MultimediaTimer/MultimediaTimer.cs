@@ -37,58 +37,49 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace UPC.MultimediaTimer
+namespace Fenix.MultimediaTimer
 {
     /// <summary>
-    /// Defines constants for the multimedia MultimediaTimer's event types.
-    /// </summary>
-    public enum TimerMode
-    {
-        /// <summary>
-        /// MultimediaTimer event occurs once.
-        /// </summary>
-        OneShot,
-
-        /// <summary>
-        /// MultimediaTimer event occurs periodically.
-        /// </summary>
-        Periodic
-    };
-
-    /// <summary>
-    /// Represents information about the multimedia MultimediaTimer's capabilities.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct TimerCaps
-    {
-        /// <summary>
-        /// Minimum supported period in milliseconds.
-        /// </summary>
-        public int periodMin;
-
-        /// <summary>
-        /// Maximum supported period in milliseconds.
-        /// </summary>
-        public int periodMax;
-    }
-
-    /// <summary>
-    /// Represents the Windows multimedia timer.
+    ///     Represents the Windows multimedia timer.
     /// </summary>
     public sealed class MultimediaTimer : IComponent
     {
+        #region IDisposable Members
+
+        /// <summary>
+        ///     Uvolòuje prostøedky držené èasovaèem
+        /// </summary>
+        public void Dispose()
+        {
+            #region Guard
+
+            if (_disposed)
+                return;
+
+            #endregion
+
+            if (IsRunning)
+                Stop();
+
+            _disposed = true;
+
+            OnDisposed(EventArgs.Empty);
+        }
+
+        #endregion
+
         #region MultimediaTimer Members
 
         #region Delegates
 
-		/// <summary>
-		/// Represents the method that is called by Windows when a timer event occurs. 
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="msg"></param>
-		/// <param name="user"></param>
-		/// <param name="param1"></param>
-		/// <param name="param2"></param>
+        /// <summary>
+        ///     Pøedstavuje metodu, která je volána systémem Windows pøi události èasovaèe.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <param name="user"></param>
+        /// <param name="param1"></param>
+        /// <param name="param2"></param>
         public delegate void TimeProc(int id, int msg, int user, int param1, int param2);
 
         // Represents methods that raise events.
@@ -98,79 +89,119 @@ namespace UPC.MultimediaTimer
 
         #region Win32 Multimedia MultimediaTimer Functions
 
-        // Gets timer capabilities.
+        /// <summary>
+        ///     Získá možnosti èasovaèe
+        /// </summary>
+        /// <param name="caps"></param>
+        /// <param name="sizeOfTimerCaps"></param>
+        /// <returns></returns>
         [DllImport("winmm.dll")]
-        private static extern int timeGetDevCaps(ref TimerCaps caps,
-                                                 int sizeOfTimerCaps);
+        private static extern int timeGetDevCaps(ref TimerCaps caps, int sizeOfTimerCaps);
 
-        // Creates and starts the timer.
+        /// <summary>
+        ///     Vytvoøí a spustí èasovaè.
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <param name="resolution"></param>
+        /// <param name="proc"></param>
+        /// <param name="user"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         [DllImport("winmm.dll")]
         private static extern int timeSetEvent(int delay, int resolution,
-                                               TimeProc proc, int user, int mode);
+            TimeProc proc, int user, int mode);
 
-        // Stops and destroys the timer.
+        /// <summary>
+        ///     Zastaví a znièí èasovaè.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [DllImport("winmm.dll")]
         private static extern int timeKillEvent(int id);
 
         // Indicates that the operation was successful.
-        private const int TIMERR_NOERROR = 0;
+        private const int TimerNoerror = 0;
 
         #endregion
 
         #region Fields
 
-        // MultimediaTimer identifier.
-        private int timerID;
+        /// <summary>
+        ///     Identifikátor instance èasovaèe
+        /// </summary>
+        private int _timerId;
 
-        // MultimediaTimer mode.
-        private volatile TimerMode mode;
+        /// <summary>
+        ///     Mód èasovaèe
+        /// </summary>
+        private volatile TimerMode _mode;
 
-        // Period between timer events in milliseconds.
-        private volatile int period;
+        /// <summary>
+        ///     Èasové období mezi událostmi èasovaèe v milisekundách.
+        /// </summary>
+        private volatile int _period;
 
-        // MultimediaTimer resolution in milliseconds.
-        private volatile int resolution;        
+        /// <summary>
+        ///     Rozlišení èasovaèe v milisekundách
+        /// </summary>
+        private volatile int _resolution;
 
-        // Called by Windows when a timer periodic event occurs.
-        private TimeProc timeProcPeriodic;
+        /// <summary>
+        ///     Voláno systémem Windows, když nastane periodická událost èasovaèe.
+        /// </summary>
+        private TimeProc _timeProcPeriodic;
 
-        // Called by Windows when a timer one shot event occurs.
-        private TimeProc timeProcOneShot;
+        /// <summary>
+        ///     Voláno systémem Windows, když dojde k události s jednou èasovanou událostí.
+        /// </summary>
+        private TimeProc _timeProcOneShot;
 
-        // Represents the method that raises the Tick event.
-        private EventRaiser tickRaiser;
+        /// <summary>
+        ///     Pøedstavuje metodu, která vyvolá událost Tick.
+        /// </summary>
+        private EventRaiser _tickRaiser;
 
-        // Indicates whether or not the timer is running.
-        private bool running = false;
+        /// <summary>
+        ///     Indikuje, zda je èasovaè spuštìn.
+        /// </summary>
+        private bool _running;
 
-        // Indicates whether or not the timer has been disposed.
-        private volatile bool disposed = false;
+        /// <summary>
+        ///     Indikuje, zda byl èasovaè uvolnìn z pamìti.
+        /// </summary>
+        private volatile bool _disposed;
 
-        // The ISynchronizeInvoke object to use for marshaling events.
-        private ISynchronizeInvoke synchronizingObject = null;
+        /// <summary>
+        ///     Synchronizaèní objekt
+        /// </summary>
+        private ISynchronizeInvoke _synchronizingObject;
 
-        // For implementing IComponent.
-        private ISite site = null;
+        /// <summary>
+        ///     Instance <see cref="ISite" />
+        /// </summary>
+        private ISite _site;
 
-        // Multimedia timer capabilities.
-        private static TimerCaps caps;
+        /// <summary>
+        ///     Možnosti èasovaèe
+        /// </summary>
+        private static readonly TimerCaps _caps;
 
         #endregion
 
         #region Events
 
         /// <summary>
-        /// Occurs when the MultimediaTimer has started;
+        ///     Událost, která se vyskytne se pøi spuštìní èasovaèe
         /// </summary>
         public event EventHandler Started;
 
         /// <summary>
-        /// Occurs when the MultimediaTimer has stopped;
+        ///     Událost, která se vyskytne se pøi zastavení èasovaèe
         /// </summary>
         public event EventHandler Stopped;
 
         /// <summary>
-        /// Occurs when the time period has elapsed.
+        ///     Událost, která se vyskytne se po uplynutí periody èasovaèe
         /// </summary>
         public event EventHandler Tick;
 
@@ -179,60 +210,57 @@ namespace UPC.MultimediaTimer
         #region Construction
 
         /// <summary>
-        /// Initialize class.
+        ///     Statický konstruktor tøídy
         /// </summary>
         static MultimediaTimer()
         {
             // Get multimedia timer capabilities.
-            timeGetDevCaps(ref caps, Marshal.SizeOf(caps));
+            timeGetDevCaps(ref _caps, Marshal.SizeOf(_caps));
         }
 
         /// <summary>
-        /// Initializes a new instance of the MultimediaTimer class with the specified IContainer.
+        ///     Inicializuje novou instanci tøídy <see cref="MultimediaTimer" /> se zadaným <see cref="IContainer" />.
         /// </summary>
-        /// <param name="container">
-        /// The IContainer to which the MultimediaTimer will add itself.
-        /// </param>
+        /// <param name="container">Instance <see cref="IContainer" /></param>
         public MultimediaTimer(IContainer container)
         {
-			// Required for Windows.Forms Class Composition Designer support
-			container.Add(this);
+            // Required for Windows.Forms Class Composition Designer support
+            container.Add(this);
 
             Initialize();
         }
 
         /// <summary>
-        /// Initializes a new instance of the MultimediaTimer class.
+        ///     Inicializuje novou instanci tøídy <see cref="MultimediaTimer" />
         /// </summary>
         public MultimediaTimer()
         {
             Initialize();
         }
 
-		/// <summary>
-		/// Destructor
-		/// </summary>
+        /// <summary>
+        ///     Destructor
+        /// </summary>
         ~MultimediaTimer()
         {
-            if(IsRunning)
-            {
-                // Stop and destroy timer.
-                timeKillEvent(timerID);
-            }
+            if (IsRunning)
+                timeKillEvent(_timerId);
         }
 
-        // Initialize timer with default values.
+        /// <summary>
+        ///     Inicializujte èasovaè s výchozími hodnotami
+        /// </summary>
         private void Initialize()
         {
-            this.mode = TimerMode.Periodic;
-            this.period = Capabilities.periodMin;
-            this.resolution = 1;
+            _mode = TimerMode.Periodic;
+            _period = Capabilities.periodMin;
+            _resolution = 1;
 
-            running = false;
+            _running = false;
 
-            timeProcPeriodic = new TimeProc(TimerPeriodicEventCallback);
-            timeProcOneShot = new TimeProc(TimerOneShotEventCallback);
-            tickRaiser = new EventRaiser(OnTick);
+            _timeProcPeriodic = TimerPeriodicEventCallback;
+            _timeProcOneShot = TimerOneShotEventCallback;
+            _tickRaiser = OnTick;
         }
 
         #endregion
@@ -240,177 +268,135 @@ namespace UPC.MultimediaTimer
         #region Methods
 
         /// <summary>
-        /// Starts the timer.
+        ///     Startuje èasovaè
         /// </summary>
         /// <exception cref="ObjectDisposedException">
-        /// The timer has already been disposed.
+        ///     Èasovaè byl již uvolnìn z pamìti
         /// </exception>
-        /// <exception cref="TimerStartException">
-        /// The timer failed to start.
-        /// </exception>
+        /// <exception cref="TimerStartException">  Start èasovaèe se nezdaøil  </exception>
         public void Start()
         {
             #region Require
 
-            if(disposed)
-            {
+            if (_disposed)
                 throw new ObjectDisposedException("MultimediaTimer");
-            }
-
-            #endregion
-
-            #region Guard
-
-            if(IsRunning)
-            {
-                return;
-            }
-
-            #endregion
-
-            // If the periodic event callback should be used.
-            if(Mode == TimerMode.Periodic)
-            {
-                // Create and start timer.
-                timerID = timeSetEvent(Period, Resolution, timeProcPeriodic, 0, (int)Mode);
-            }
-                // Else the one shot event callback should be used.
-            else
-            {
-                // Create and start timer.
-                timerID = timeSetEvent(Period, Resolution, timeProcOneShot, 0, (int)Mode);
-            }
-
-            // If the timer was created successfully.
-            if(timerID != 0)
-            {
-                running = true;
-
-                if(SynchronizingObject != null && SynchronizingObject.InvokeRequired)
-                {
-                    SynchronizingObject.BeginInvoke(
-                        new EventRaiser(OnStarted), 
-                        new object[] { EventArgs.Empty });
-                }
-                else
-                {
-                    OnStarted(EventArgs.Empty);
-                }                
-            }
-            else
-            {
-                throw new TimerStartException("Unable to start multimedia MultimediaTimer.");
-            }
-        }
-
-        /// <summary>
-        /// Starts the timer.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">
-        /// The timer has already been disposed.
-        /// </exception>
-        /// <exception cref="TimerStartException">
-        /// The timer failed to start.
-        /// </exception>
-        public void Start(TimeProc timerCallback)
-        {
-            #region Require
-
-            if (disposed)
-            {
-                throw new ObjectDisposedException("MultimediaTimer");
-            }
 
             #endregion
 
             #region Guard
 
             if (IsRunning)
-            {
                 return;
-            }
 
             #endregion
 
             // If the periodic event callback should be used.
             if (Mode == TimerMode.Periodic)
-            {
-                // Create and start timer.
-                timerID = timeSetEvent(Period, Resolution, timerCallback, 0, (int)Mode);
-            }
-                // Else the one shot event callback should be used.
+                _timerId = timeSetEvent(Period, Resolution, _timeProcPeriodic, 0, (int) Mode);
+            // Else the one shot event callback should be used.
             else
-            {
-                // Create and start timer.
-                timerID = timeSetEvent(Period, Resolution, timerCallback, 0, (int)Mode);
-            }
+                _timerId = timeSetEvent(Period, Resolution, _timeProcOneShot, 0, (int) Mode);
 
             // If the timer was created successfully.
-            if (timerID != 0)
+            if (_timerId != 0)
             {
-                running = true;
+                _running = true;
 
                 if (SynchronizingObject != null && SynchronizingObject.InvokeRequired)
-                {
                     SynchronizingObject.BeginInvoke(
                         new EventRaiser(OnStarted),
-                        new object[] { EventArgs.Empty });
-                }
+                        new object[] {EventArgs.Empty});
                 else
-                {
                     OnStarted(EventArgs.Empty);
-                }
             }
             else
-            {
                 throw new TimerStartException("Unable to start multimedia MultimediaTimer.");
-            }
         }
 
         /// <summary>
-        /// Stops timer.
+        ///     Starts the timer.
         /// </summary>
         /// <exception cref="ObjectDisposedException">
-        /// If the timer has already been disposed.
+        ///     The timer has already been disposed.
         /// </exception>
-        public void Stop()
+        /// <exception cref="TimerStartException">
+        ///     The timer failed to start.
+        /// </exception>
+        public void Start(TimeProc timerCallback)
         {
             #region Require
 
-            if(disposed)
-            {
+            if (_disposed)
                 throw new ObjectDisposedException("MultimediaTimer");
-            }
 
             #endregion
 
             #region Guard
 
-            if(!running)
-            {
+            if (IsRunning)
                 return;
+
+            #endregion
+
+            // If the periodic event callback should be used.
+            if (Mode == TimerMode.Periodic)
+                _timerId = timeSetEvent(Period, Resolution, timerCallback, 0, (int) Mode);
+            // Else the one shot event callback should be used.
+            else
+                _timerId = timeSetEvent(Period, Resolution, timerCallback, 0, (int) Mode);
+
+            // If the timer was created successfully.
+            if (_timerId != 0)
+            {
+                _running = true;
+
+                if (SynchronizingObject != null && SynchronizingObject.InvokeRequired)
+                    SynchronizingObject.BeginInvoke(
+                        new EventRaiser(OnStarted),
+                        new object[] {EventArgs.Empty});
+                else
+                    OnStarted(EventArgs.Empty);
             }
+            else
+                throw new TimerStartException("Unable to start multimedia MultimediaTimer.");
+        }
+
+        /// <summary>
+        ///     Stops timer.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">
+        ///     If the timer has already been disposed.
+        /// </exception>
+        public void Stop()
+        {
+            #region Require
+
+            if (_disposed)
+                throw new ObjectDisposedException("MultimediaTimer");
+
+            #endregion
+
+            #region Guard
+
+            if (!_running)
+                return;
 
             #endregion
 
             // Stop and destroy timer.
-            int result = timeKillEvent(timerID);
+            var result = timeKillEvent(_timerId);
 
-            Debug.Assert(result == TIMERR_NOERROR);
+            Debug.Assert(result == TimerNoerror);
 
-            running = false;
+            _running = false;
 
-            if(SynchronizingObject != null && SynchronizingObject.InvokeRequired)
-            {
+            if (SynchronizingObject != null && SynchronizingObject.InvokeRequired)
                 SynchronizingObject.BeginInvoke(
-                    new EventRaiser(OnStopped), 
-                    new object[] { EventArgs.Empty });
-            }
+                    new EventRaiser(OnStopped),
+                    new object[] {EventArgs.Empty});
             else
-            {
                 OnStopped(EventArgs.Empty);
-            }
-        }        
+        }
 
         #region Callbacks
 
@@ -418,23 +404,19 @@ namespace UPC.MultimediaTimer
         // periodic event occurs.
         private void TimerPeriodicEventCallback(int id, int msg, int user, int param1, int param2)
         {
-            if(synchronizingObject != null)
-            {
-                synchronizingObject.BeginInvoke(tickRaiser, new object[] { EventArgs.Empty });
-            }
+            if (_synchronizingObject != null)
+                _synchronizingObject.BeginInvoke(_tickRaiser, new object[] {EventArgs.Empty});
             else
-            {
                 OnTick(EventArgs.Empty);
-            }
         }
 
         // Callback method called by the Win32 multimedia timer when a timer
         // one shot event occurs.
         private void TimerOneShotEventCallback(int id, int msg, int user, int param1, int param2)
         {
-            if(synchronizingObject != null)
+            if (_synchronizingObject != null)
             {
-                synchronizingObject.BeginInvoke(tickRaiser, new object[] { EventArgs.Empty });
+                _synchronizingObject.BeginInvoke(_tickRaiser, new object[] {EventArgs.Empty});
                 Stop();
             }
             else
@@ -451,55 +433,47 @@ namespace UPC.MultimediaTimer
         // Raises the Disposed event.
         private void OnDisposed(EventArgs e)
         {
-            EventHandler handler = Disposed;
+            var handler = Disposed;
 
-            if(handler != null)
-            {
+            if (handler != null)
                 handler(this, e);
-            }
         }
 
         // Raises the Started event.
         private void OnStarted(EventArgs e)
         {
-            EventHandler handler = Started;
+            var handler = Started;
 
-            if(handler != null)
-            {
+            if (handler != null)
                 handler(this, e);
-            }
         }
 
         // Raises the Stopped event.
         private void OnStopped(EventArgs e)
         {
-            EventHandler handler = Stopped;
+            var handler = Stopped;
 
-            if(handler != null)
-            {
+            if (handler != null)
                 handler(this, e);
-            }
         }
 
         // Raises the Tick event.
         private void OnTick(EventArgs e)
         {
-            EventHandler handler = Tick;
+            var handler = Tick;
 
-            if(handler != null)
-            {
+            if (handler != null)
                 handler(this, e);
-            }
         }
 
-        #endregion        
+        #endregion
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Gets or sets the object used to marshal event-handler calls.
+        ///     Získá nebo nastaví objekt, který se používá pro volání obsluhy synchronizace událostí
         /// </summary>
         public ISynchronizeInvoke SynchronizingObject
         {
@@ -507,70 +481,60 @@ namespace UPC.MultimediaTimer
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
 
-                return synchronizingObject;
+                return _synchronizingObject;
             }
             set
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
 
-                synchronizingObject = value;
+                _synchronizingObject = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the time between Tick events.
+        ///     Gets or sets the time between Tick events.
         /// </summary>
         /// <exception cref="ObjectDisposedException">
-        /// If the timer has already been disposed.
-        /// </exception>   
+        ///     If the timer has already been disposed.
+        /// </exception>
         public int Period
         {
             get
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
 
-                return period;
+                return _period;
             }
             set
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
-                else if(value < Capabilities.periodMin || value > Capabilities.periodMax)
-                {
+                if (value < Capabilities.periodMin || value > Capabilities.periodMax)
                     throw new ArgumentOutOfRangeException("Period", value,
-                                                          "Multimedia MultimediaTimer period out of range.");
-                }
+                        "Multimedia MultimediaTimer period out of range.");
 
                 #endregion
 
-                period = value;
+                _period = value;
 
-                if(IsRunning)
+                if (IsRunning)
                 {
                     Stop();
                     Start();
@@ -579,17 +543,17 @@ namespace UPC.MultimediaTimer
         }
 
         /// <summary>
-        /// Gets or sets the timer resolution.
+        ///     Gets or sets the timer resolution.
         /// </summary>
         /// <exception cref="ObjectDisposedException">
-        /// If the timer has already been disposed.
-        /// </exception>        
+        ///     If the timer has already been disposed.
+        /// </exception>
         /// <remarks>
-        /// The resolution is in milliseconds. The resolution increases 
-        /// with smaller values; a resolution of 0 indicates periodic events 
-        /// should occur with the greatest possible accuracy. To reduce system 
-        /// overhead, however, you should use the maximum value appropriate 
-        /// for your application.
+        ///     The resolution is in milliseconds. The resolution increases
+        ///     with smaller values; a resolution of 0 indicates periodic events
+        ///     should occur with the greatest possible accuracy. To reduce system
+        ///     overhead, however, you should use the maximum value appropriate
+        ///     for your application.
         /// </remarks>
         public int Resolution
         {
@@ -597,34 +561,28 @@ namespace UPC.MultimediaTimer
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
 
-                return resolution;
+                return _resolution;
             }
             set
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
-                else if(value < 0)
-                {
+                if (value < 0)
                     throw new ArgumentOutOfRangeException("Resolution", value,
-                                                          "Multimedia timer resolution out of range.");
-                }
+                        "Multimedia timer resolution out of range.");
 
                 #endregion
 
-                resolution = value;
+                _resolution = value;
 
-                if(IsRunning)
+                if (IsRunning)
                 {
                     Stop();
                     Start();
@@ -633,10 +591,10 @@ namespace UPC.MultimediaTimer
         }
 
         /// <summary>
-        /// Gets the timer mode.
+        ///     Gets the timer mode.
         /// </summary>
         /// <exception cref="ObjectDisposedException">
-        /// If the timer has already been disposed.
+        ///     If the timer has already been disposed.
         /// </exception>
         public TimerMode Mode
         {
@@ -644,29 +602,25 @@ namespace UPC.MultimediaTimer
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
 
-                return mode;
+                return _mode;
             }
             set
             {
                 #region Require
 
-                if(disposed)
-                {
+                if (_disposed)
                     throw new ObjectDisposedException("MultimediaTimer");
-                }
 
                 #endregion
-                
-                mode = value;
 
-                if(IsRunning)
+                _mode = value;
+
+                if (IsRunning)
                 {
                     Stop();
                     Start();
@@ -675,26 +629,14 @@ namespace UPC.MultimediaTimer
         }
 
         /// <summary>
-        /// Gets a value indicating whether the MultimediaTimer is running.
+        ///     Gets a value indicating whether the MultimediaTimer is running.
         /// </summary>
-        public bool IsRunning
-        {
-            get
-            {
-                return running;
-            }
-        }
+        public bool IsRunning => _running;
 
         /// <summary>
-        /// Gets the timer capabilities.
+        ///     Gets the timer capabilities.
         /// </summary>
-        public static TimerCaps Capabilities
-        {
-            get
-            {
-                return caps;
-            }
-        }
+        public static TimerCaps Capabilities => _caps;
 
         #endregion
 
@@ -702,70 +644,20 @@ namespace UPC.MultimediaTimer
 
         #region IComponent Members
 
-		/// <summary>
-		/// 
-		/// </summary>
-        public event System.EventHandler Disposed;
+        /// <summary>
+        ///     <see cref="EventHandler" />, který indikuje, že èasovaè byl uvolnìn z pamìti
+        /// </summary>
+        public event EventHandler Disposed;
 
-		/// <summary>
-		/// 
-		/// </summary>
+        /// <summary>
+        ///     Vrací instanci <see cref="ISite" />
+        /// </summary>
         public ISite Site
         {
-            get
-            {
-                return site;
-            }
-            set
-            {
-                site = value;
-            }
+            get => _site;
+            set => _site = value;
         }
 
         #endregion
-
-        #region IDisposable Members
-
-        /// <summary>
-        /// Frees timer resources.
-        /// </summary>
-        public void Dispose()
-        {
-            #region Guard
-
-            if(disposed)
-            {
-                return;
-            }
-
-            #endregion               
-
-            if(IsRunning)
-            {
-                Stop();
-            }
-
-            disposed = true;
-
-            OnDisposed(EventArgs.Empty);
-        }
-
-        #endregion       
-    }
-
-    /// <summary>
-    /// The exception that is thrown when a timer fails to start.
-    /// </summary>
-    public class TimerStartException : ApplicationException
-    {
-        /// <summary>
-        /// Initializes a new instance of the TimerStartException class.
-        /// </summary>
-        /// <param name="message">
-        /// The error message that explains the reason for the exception. 
-        /// </param>
-        public TimerStartException(string message) : base(message)
-        {
-        }
     }
 }

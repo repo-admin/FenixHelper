@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using FenixHelper;
-using FenixHelper.Validation;
+using Fenix.Validation;
+using Fenix.Xml;
 
 #region SQL tabulka
 
@@ -60,12 +56,102 @@ GO
 
 #endregion
 
-namespace FenixHelper.XMLMessage
+namespace Fenix.XmlMessages
 {
-	/// <summary>
-	/// Třída představující XML message pro : číselník cdlSuppliers
-	/// </summary>
-	[XmlRoot("NewDataSet")]
+    /// <summary>
+    /// Třída představující XML message pro : číselník cdlSuppliers
+    /// </summary>
+    /// <remarks>
+    /// <code>
+    /// CREATE TABLE [dbo].[cdlSuppliers] (
+    /// 	[ID] [int] IDENTITY(1, 1) NOT NULL
+    /// 	,[OrganisationNumber] [int] NOT NULL
+    /// 	,[CompanyName] [nvarchar](100) NOT NULL
+    /// 	,[City] [nvarchar](100) NOT NULL
+    /// 	,[StreetName] [nvarchar](100) NOT NULL
+    /// 	,[StreetOrientationNumber] [nvarchar](15) NULL
+    /// 	,[StreetHouseNumber] [nvarchar](15) NULL
+    /// 	,[ZipCode] [nvarchar](10) NULL
+    /// 	,[IdCountry] [nvarchar](3) NULL
+    /// 	,[ICO] [nvarchar](20) NULL
+    /// 	,[DIC] [nvarchar](15) NULL
+    /// 	,[IsSent] [bit] NULL
+    /// 	,[SentDate] [datetime] NULL
+    /// 	,[IsActive] [bit] NOT NULL CONSTRAINT [DF_cdlSuppliers_IsActive] DEFAULT((1))
+    /// 	,[ModifyDate] [datetime] NOT NULL CONSTRAINT [DF_cdlSuppliers_ModifyDate] DEFAULT(getdate())
+    /// 	,[ModifyUserId] [int] NOT NULL CONSTRAINT [DF_cdlSuppliers_ModifyUserId] DEFAULT((0))
+    /// 	,CONSTRAINT [PK_Suppliers] PRIMARY KEY CLUSTERED ([ID] ASC) WITH (
+    /// 		PAD_INDEX = OFF
+    /// 		,STATISTICS_NORECOMPUTE = OFF
+    /// 		,IGNORE_DUP_KEY = OFF
+    /// 		,ALLOW_ROW_LOCKS = ON
+    /// 		,ALLOW_PAGE_LOCKS = ON
+    /// 		) ON [PRIMARY]
+    /// 	) ON [PRIMARY]
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'číslo organizace'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'OrganisationNumber'
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'číslo orientační'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'StreetOrientationNumber'
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'číslo popisné'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'StreetHouseNumber'
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'ID země'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'IdCountry'
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'indikátor, zda bylo odesláno na ND'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'IsSent'
+    /// GO
+    /// 
+    /// EXEC sys.sp_addextendedproperty @name = N'MS_Description'
+    /// 	,@value = N'Kdy bylo posláno na ND'
+    /// 	,@level0type = N'SCHEMA'
+    /// 	,@level0name = N'dbo'
+    /// 	,@level1type = N'TABLE'
+    /// 	,@level1name = N'cdlSuppliers'
+    /// 	,@level2type = N'COLUMN'
+    /// 	,@level2name = N'SentDate'
+    /// GO
+    /// </code>
+    /// </remarks>
+    [XmlRoot("NewDataSet")]
 	public class CDLSuppliers : IXMLMessage
 	{
 		#region Properties
@@ -96,7 +182,7 @@ namespace FenixHelper.XMLMessage
 		/// <returns></returns>
 		public string ToXMLString()
 		{
-			return XmlCreator.CreateXmlString(this, BC.URL_W3_ORG_SCHEMA, Encoding.UTF8);
+			return XmlCreator.CreateXmlString(this, BC.UrlW3OrgSchema, Encoding.UTF8);
 		}
 
 		/// <summary>
@@ -117,49 +203,49 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// 
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int ID { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int MessageID { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[IntMinMaxAttribute(Min = 1)]
+		[IntMinMax(Min = 1)]
 		public int MessageTypeID { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string MessageDescription { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string OrganisationNumber { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string CompanyName { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string City { get; set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string StreetName { get; set; }
 
 		/// <summary>

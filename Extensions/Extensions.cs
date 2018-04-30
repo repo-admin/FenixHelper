@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
 
-namespace FenixHelper
+namespace Fenix.Extensions
 {
 	/// <summary>
-	/// 
+	/// Rozšíření implementace <see cref="String"/> a pole <see cref="Byte"/>
 	/// </summary>
 	public static class Extensions
 	{

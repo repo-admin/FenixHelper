@@ -1,63 +1,63 @@
 using System;
 using System.Threading;
 
-namespace UPC.CronNET
+namespace Fenix.CronNET
 {
-	/// <summary>
-	/// Rozhraní pro CronJob
-	/// </summary>
-    public interface ICronJob
-    {
-		/// <summary>
-		/// Spustí úlohu
-		/// </summary>
-		/// <param name="date_time"></param>
-        void Execute(DateTime date_time);
-
-		/// <summary>
-		/// Pøeruší zpracování spuštìné úlohy
-		/// </summary>
-        void Abort();
-    }
-
-	/// <summary>
-	/// 
+    /// <summary>
+	/// Reprezentuje pracovní úlohu
 	/// </summary>
     public class CronJob : ICronJob
     {
-        private readonly ICronSchedule _cron_schedule = new CronSchedule();
-        private readonly ThreadStart _thread_start;
+        /// <summary>
+        /// Instance plánovaèe úloh
+        /// </summary>
+        private readonly ICronSchedule _cronSchedule;
+        /// <summary>
+        /// Delegát typu ThreadStart
+        /// </summary>
+        private readonly ThreadStart _threadStart;
+        /// <summary>
+        /// Instance bìžícího vlákna
+        /// </summary>
         private Thread _thread;
 
-		/// <summary>
-		/// ctor
-		/// </summary>
-		/// <param name="schedule"></param>
-		/// <param name="thread_start"></param>
-        public CronJob(string schedule, ThreadStart thread_start)
+        /// <summary>
+        /// Inicializuje novou instance tøídy CronJob
+        /// </summary>
+        private CronJob() { }
+
+        /// <summary>
+        /// Inicializuje novou instanci tøídy CronJob
+        /// </summary>
+        /// <param name="schedule">Plánovaè</param>
+        /// <param name="threadStart"></param>
+        public CronJob(string schedule, ThreadStart threadStart)
         {
-            _cron_schedule = new CronSchedule(schedule);
-            _thread_start = thread_start;
-            _thread = new Thread(thread_start);
+            _cronSchedule = new CronSchedule(schedule);
+            _threadStart = threadStart;
+            _thread = new Thread(threadStart);
         }
 
-        private object _lock = new object();
+        /// <summary>
+        /// Synchronizaèní objekt
+        /// </summary>
+        private readonly object _lock = new object();
 
 		/// <summary>
 		/// Spustí úlohu
 		/// </summary>
-		/// <param name="date_time"></param>
-        public void Execute(DateTime date_time)
+		/// <param name="dateTime"></param>
+        public void Execute(DateTime dateTime)
         {
             lock (_lock)
             {
-                if (!_cron_schedule.IsTime(date_time))
+                if (!_cronSchedule.IsTime(dateTime))
                     return;
 
                 if (_thread.ThreadState == ThreadState.Running)
                     return;
 				                                
-                _thread = new Thread(_thread_start);
+                _thread = new Thread(_threadStart);
                 _thread.Start();
             }
         }

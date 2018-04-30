@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FenixHelper.Common
+namespace Fenix.Common
 {
 	/// <summary>
-	/// 
+	/// Výsledek
 	/// </summary>
 	public class ResultAppService
 	{
 		/// <summary>
-		/// 
+		/// Číslo výsledku
 		/// </summary>
 		public int ResultNumber { get; set; }
 
 		/// <summary>
-		/// 
+		/// Zpráva výsledku
 		/// </summary>
 		public string ResultMessage { get; set; }
 
-		/// <summary>
-		/// ctor
-		/// </summary>
-		public ResultAppService()
+        /// <summary>
+        /// Inicializuje novou instanci třídy ResultAppService
+        /// </summary>
+        public ResultAppService()
 		{
 			this.ResultNumber = 0;
 			this.ResultMessage = String.Empty;
@@ -42,7 +38,7 @@ namespace FenixHelper.Common
 		}
 
 		/// <summary>
-		/// přidá zprávu do result message
+		/// Přidá zprávu do result message
 		/// </summary>
 		/// <param name="resultMessage"></param>
 		public void AddResultMessage(string resultMessage)
@@ -55,7 +51,7 @@ namespace FenixHelper.Common
 		}
 
 		/// <summary>
-		/// nastaví result number a přidá zprávu do result message
+		/// Nastaví result number a přidá zprávu do result message
 		/// </summary>
 		/// <param name="resultNumber"></param>
 		/// <param name="resultMessage"></param>

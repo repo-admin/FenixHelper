@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
-using FenixHelper.Validation;
+using Fenix.Validation;
+using Fenix.Xml;
 
-namespace FenixHelper.XMLMessage
+namespace Fenix.XmlMessages
 {
 	/// <summary>
-	/// Třída pro vytvoření XML message pro Refurbished Order RF0	
-	/// (objednávka naskladnění repasovaného zboží ze strany UPC)
+	/// Třída pro vytvoření XML message pro RefurbishedConfirmation RF1	
+	/// (potvrzení naskladnění repasovaného zboží ze strany ND)
 	/// </summary>
 	[XmlRoot("NewDataSet")]
-	public class RF0Refurbished : IXMLMessage
+	public class RF1Refurbished : IXMLMessage
 	{
 		#region Properties
 
 		/// <summary>
 		/// Hlavička zprávy
 		/// </summary>
-		[XmlElement(ElementName = "CommunicationMessagesRefurbishedOrder")]
-		public RF0Header Header { get; set; }
+		[XmlElement(ElementName = "CommunicationMessagesRefurbishedConfirmation")]
+		public RF1Header Header { get; set; }
 
 		#endregion
 
@@ -28,24 +29,24 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public RF0Refurbished()
+		public RF1Refurbished()
 		{
-			this.Header = new RF0Header();
+			this.Header = new RF1Header();
 		}
 
 		#endregion
 
 		/// <summary>
-		/// vytvoří XML string serializací této třídy
+		/// Vytvoří XML string serializací této třídy
 		/// </summary>
 		/// <returns></returns>
 		public string ToXMLString()
 		{
-			return XmlCreator.CreateXmlString(this, BC.URL_W3_ORG_SCHEMA, Encoding.UTF8);
+			return XmlCreator.CreateXmlString(this, BC.UrlW3OrgSchema, Encoding.UTF8);
 		}
 
 		/// <summary>
-		/// validace
+		/// Validace
 		/// </summary>
 		/// <returns></returns>
 		public List<string> Validate()
@@ -55,12 +56,12 @@ namespace FenixHelper.XMLMessage
 	}
 
 	/// <summary>
-	/// Hlavička objednávky
+	/// Hlavička potvrzení
 	/// </summary>
-	public class RF0Header
+	public class RF1Header
 	{
 		/// <summary>
-		/// ID této objednávky
+		/// ID ?????  jaké
 		/// </summary>
 		[IntMinMax(Min = 1)]
 		public int ID { get; set; }
@@ -80,61 +81,60 @@ namespace FenixHelper.XMLMessage
 		/// <summary>
 		/// popis typu zprávy
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string MessageTypeDescription { get; set; }
 
 		/// <summary>
-		/// datum odeslání zprávy
+		/// ???????
 		/// </summary>
-		[XmlElement(DataType = "date")]
-		public DateTime MessageDateOfShipment { get; set; }
+		public int RefurbishedOrderID { get; set; }
 
 		/// <summary>
-		/// ID zákazníka
+		/// Odběratel ID
 		/// </summary>
 		[IntMinMax(Min = 1)]
 		public int CustomerID { get; set; }
 
 		/// <summary>
-		/// popis/název zákazníka
+		/// Odběratel název
 		/// </summary>
-		[NotNullOrEmptyAttribute]
-		public string CustomerDescription { get; set; }
+		[NotNullOrEmpty]
+		public string CustomerName { get; set; }
 
 		/// <summary>
-		/// datum, ????????????????
+		/// datum odeslání požadavku na naskladnění repasovaného zboží
 		/// </summary>
 		[XmlElement(DataType = "date")]
-		public DateTime DateOfDelivery { get; set; }
+		public DateTime DateOfShipment { get; set; }
 
 		/// <summary>
 		/// položky objednávky (požadované items, nebo kits)
 		/// </summary>
-		[XmlArrayItem("itemOrKit", typeof(RF0Items))]
+		[XmlArrayItem("itemOrKit", typeof(RF1Items))]
 		[XmlArray("itemsOrKits")]
-		public List<RF0Items> items { get; set; }
+		public List<RF1Items> items { get; set; }
 
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public RF0Header()
+		public RF1Header()
 		{
-			this.items = new List<RF0Items>();
+			this.items = new List<RF1Items>();
 		}
 
 		/// <summary>
 		/// validace
 		/// </summary>
 		/// <returns></returns>
-		public List<string> Validate(RF0Header data)
+		public List<string> Validate(RF1Header data)
 		{
 			List<string> errors = new List<string>();
 
-			Validation.Validation.ValidateAllProperties<RF0Header>(data, out errors);
+			Validation.Validation.ValidateAllProperties<RF1Header>(data, out errors);
 
 			if (items.Count > 0)
 			{
-				foreach (RF0Items item in items)
+				foreach (RF1Items item in items)
 				{
 					errors.AddRange(item.Validate(item));
 				}
@@ -149,67 +149,105 @@ namespace FenixHelper.XMLMessage
 	}
 
 	/// <summary>
-	/// Položky objednávky
+	/// Položky 
 	/// </summary>
-	public class RF0Items
+	public class RF1Items
 	{
 		/// <summary>
-		/// příznak, zda položka je item, nebo kit
+		/// priznak, zda polozka je item, nebo kit
 		/// 0 .. item	1 .. KIT
 		/// </summary>		
 		public int ItemVerKit { get; set; }
 
 		/// <summary>
-		/// ID položky
+		/// 
 		/// </summary>
 		[IntMinMax(Min = 1)]
 		public int ItemOrKitID { get; set; }
 
 		/// <summary>
-		/// popis/název položky
+		/// 
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemOrKitDescription { get; set; }
 
 		/// <summary>
-		/// množství
+		/// objednané množství item/kitu
 		/// </summary>		
 		public decimal ItemOrKitQuantity { get; set; }
 
 		/// <summary>
-		/// ID měrné jednotky
+		/// ID měrné jednotky item/kitu
 		/// </summary>
 		[IntMinMax(Min = 1)]
 		public int ItemOrKitUnitOfMeasureID { get; set; }
 
 		/// <summary>
-		/// měrná jednotka
+		/// měrná jednotka item/kitu
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemOrKitUnitOfMeasure { get; set; }
 
 		/// <summary>
-		/// ID kvality položky
+		/// ID kvality item/kitu
 		/// </summary>
 		[IntMinMax(Min = 1)]
 		public int ItemOrKitQualityID { get; set; }
 
 		/// <summary>
-		/// popis kvality položky
+		/// popis kvality item/kitu
 		/// </summary>
-		[NotNullOrEmptyAttribute]
+		[NotNullOrEmpty]
 		public string ItemOrKitQuality { get; set; }
+
+		/// <summary>
+		/// ND příjemka
+		/// </summary>
+		public string NDReceipt { get; set; }
+
+		/// <summary>
+		/// sériová čísla
+		/// </summary>
+		[XmlArray("ItemOrKitSNs")]
+		public List<RF1ItemSN> ItemSNs { get; set; }
+
+		/// <summary>
+		/// ctor
+		/// </summary>
+		public RF1Items()
+		{
+			this.ItemSNs = new List<RF1ItemSN>();
+		}
 
 		/// <summary>
 		/// validace
 		/// </summary>
 		/// <returns></returns>
-		public List<string> Validate(RF0Items data)
+		public List<string> Validate(RF1Items data)
 		{
 			List<string> errors;
-			Validation.Validation.ValidateAllProperties<RF0Items>(data, out errors);
+			Validation.Validation.ValidateAllProperties<RF1Items>(data, out errors);
 
 			return errors;
 		}
+	}
+
+	/// <summary>
+	/// Sériová čísla items v kitu
+	/// </summary>	
+	[XmlType(TypeName = "ItemOrKitSNs")]
+	public class RF1ItemSN
+	{
+		/// <summary>
+		/// 1. sériové číslo
+		/// </summary>
+		[XmlAttribute("SN1")]
+		public string SerialNumber1 { get; set; }
+
+		/// <summary>
+		/// 2. sériové číslo
+		/// </summary>
+		[XmlAttribute("SN2")]
+		public string SerialNumber2 { get; set; }
 	}
 }
