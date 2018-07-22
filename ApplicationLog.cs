@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Fenix.AppLog
+namespace Fenix
 {
 	/// <summary>
 	/// Pomocná třída pro logování
 	/// </summary>
-    public class AppLog
+    public class ApplicationLog
     {
 		/// <summary>
 		/// Kategorie logu do databáze - informace
