@@ -8,4 +8,5 @@
         /// </summary>
         internal const string UrlW3OrgSchema = "http://www.w3.org/2001/XMLSchema";
     }
+
 }
