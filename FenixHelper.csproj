@@ -92,6 +92,7 @@
     <Compile Include="XmlMessages\RF0Refurbished.cs" />
     <Compile Include="XmlMessages\RF1Refurbished.cs" />
     <Compile Include="XmlMessages\S0Shipment.cs" />
+    <Compile Include="XmlMessages\VC2RetEquipConf.cs" />
     <Compile Include="XmlMessages\S1Shipment.cs" />
     <Compile Include="Xml\XmlCreator.cs" />
     <Compile Include="Xml\XmlDeserializator.cs" />
